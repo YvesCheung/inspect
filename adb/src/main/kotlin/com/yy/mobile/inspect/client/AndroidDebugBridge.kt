@@ -46,6 +46,9 @@ class AndroidDebugBridge {
 
     @Throws(Exception::class)
     fun sendCommand(command: AdbCommand) {
+
+        AdbCommandLine.startServer()
+
         val executor = command.executor() ?: currentThreadExecutor
         executor.execute {
 

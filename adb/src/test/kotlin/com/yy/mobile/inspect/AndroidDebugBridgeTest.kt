@@ -1,5 +1,6 @@
 package com.yy.mobile.inspect
 
+import com.yy.mobile.inspect.client.AdbCommandLine
 import com.yy.mobile.inspect.client.AndroidDebugBridge
 import com.yy.mobile.inspect.command.*
 import org.junit.jupiter.api.Assertions
@@ -16,6 +17,16 @@ import java.util.concurrent.CountDownLatch
 class AndroidDebugBridgeTest {
 
     private val adb = AndroidDebugBridge()
+
+    @Test
+    fun startAdb() {
+        AdbCommandLine.startServer()
+    }
+
+    @Test
+    fun stopAdb() {
+        AdbCommandLine.killServer()
+    }
 
     @Test
     fun testVersion() = testCommand("host:version")
@@ -129,7 +140,7 @@ class AndroidDebugBridgeTest {
                         } else {
                             channel.read(tempBuffer)
 
-                            println("finish handshake, rsp = "+ String(tempBuffer.array()))
+                            println("finish handshake, rsp = " + String(tempBuffer.array()))
                         }
                     } catch (e: IOException) {
                         println("IO error during handshake: " + e.message)

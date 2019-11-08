@@ -12,7 +12,7 @@ import java.nio.channels.SocketChannel
  * jdwp:<pid>
  * Connects to the JDWP thread running in the VM of process <pid>.
  *
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 open class ConnectJdwpCommand(

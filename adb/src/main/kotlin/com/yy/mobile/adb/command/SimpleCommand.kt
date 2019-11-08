@@ -13,7 +13,7 @@ import java.nio.channels.SocketChannel
  * @param command adb命令
  * @param detailMessage 是否读取详细信息。决定[AdbResponse.message]是否有值。
  *
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 open class SimpleCommand(

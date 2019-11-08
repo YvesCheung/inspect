@@ -12,7 +12,7 @@ package com.yy.mobile.adb.command
  *
  * @param deviceSerialNumber the device/emulator identified
  *
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 class SelectDeviceCommand(deviceSerialNumber: String) :

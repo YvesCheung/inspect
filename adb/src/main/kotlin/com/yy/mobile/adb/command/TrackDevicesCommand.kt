@@ -19,7 +19,7 @@ import java.util.concurrent.*
  * to track the state of connected devices in real-time without
  * polling the server repeatedly.
  *
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 @Suppress("MemberVisibilityCanBePrivate")

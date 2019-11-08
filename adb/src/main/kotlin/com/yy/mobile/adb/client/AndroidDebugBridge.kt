@@ -20,7 +20,7 @@ import java.util.concurrent.TimeoutException
  *
  * ADB传输原理参考：https://github.com/aosp-mirror/platform_system_core/blob/master/adb/OVERVIEW.TXT
  *
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 class AndroidDebugBridge {

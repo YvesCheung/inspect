@@ -6,7 +6,7 @@ import java.nio.channels.SocketChannel
 import java.util.concurrent.TimeoutException
 
 /**
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 object SocketHelper {

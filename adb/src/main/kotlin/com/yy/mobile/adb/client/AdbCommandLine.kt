@@ -5,7 +5,7 @@ import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/8
  */
 object AdbCommandLine {

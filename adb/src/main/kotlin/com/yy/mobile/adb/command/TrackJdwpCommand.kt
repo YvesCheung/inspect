@@ -23,7 +23,7 @@ import java.util.concurrent.Executors
  *
  * Note that there is no single-shot service to retrieve the list only once.
  *
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 open class TrackJdwpCommand(

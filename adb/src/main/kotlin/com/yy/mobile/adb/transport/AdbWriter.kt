@@ -4,7 +4,7 @@ import java.io.IOException
 import java.util.concurrent.TimeoutException
 
 /**
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 interface AdbWriter {

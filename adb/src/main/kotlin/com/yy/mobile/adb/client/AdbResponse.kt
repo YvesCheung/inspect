@@ -1,7 +1,7 @@
 package com.yy.mobile.adb.client
 
 /**
- * @author: YvesCheung
+ * @author YvesCheung
  * 2019/11/7
  */
 data class AdbResponse(

@@ -3,6 +3,7 @@ package com.yy.mobile.inspect.command
 import com.yy.mobile.inspect.transport.AdbReader
 import com.yy.mobile.inspect.transport.AdbWriter
 import java.io.IOException
+import java.lang.Exception
 import java.nio.channels.SocketChannel
 
 /**
@@ -16,8 +17,14 @@ import java.nio.channels.SocketChannel
  */
 open class ConnectJdwpCommand(
     private val deviceSerialNumber: String,
-    private val pid: Int
+    private val pid: Int,
+    private val listener: ReadyListener
 ) : AdbCommand {
+
+    interface ReadyListener {
+
+        fun whenChannelReady(channel: SocketChannel)
+    }
 
     private val selectTarget = SelectDeviceCommand(deviceSerialNumber)
 
@@ -30,6 +37,19 @@ open class ConnectJdwpCommand(
             throw IOException("Can't select device $deviceSerialNumber: ${result.message}")
         }
 
-        writer.write("jdwp:$pid")
+        try {
+            writer.write("jdwp:$pid")
+            val response = reader.read(false)
+            if (!response.okay) {
+                throw IOException("Can't connect jdwp:$pid: ${response.message}")
+            }
+
+            listener.whenChannelReady(channel)
+        } catch (e: Exception) {
+            channel.close()
+            throw e
+        }
     }
+
+    override fun needCloseSocket(): Boolean = false
 }

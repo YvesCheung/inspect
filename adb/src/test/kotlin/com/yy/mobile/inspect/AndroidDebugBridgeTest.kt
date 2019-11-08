@@ -1,12 +1,12 @@
 package com.yy.mobile.inspect
 
 import com.yy.mobile.inspect.client.AndroidDebugBridge
-import com.yy.mobile.inspect.command.SelectDeviceCommand
-import com.yy.mobile.inspect.command.TrackDevicesCommand
-import com.yy.mobile.inspect.command.SimpleCommand
-import com.yy.mobile.inspect.command.TrackJdwpCommand
+import com.yy.mobile.inspect.command.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.io.IOException
+import java.nio.ByteBuffer
+import java.nio.channels.SocketChannel
 import java.util.concurrent.CountDownLatch
 
 /**
@@ -94,13 +94,50 @@ class AndroidDebugBridgeTest {
     fun testJdwpTracker() {
         val lock = CountDownLatch(1)
 
-        val tracker = TrackJdwpCommand("cc764b31", object : TrackJdwpCommand.UpdateListener {
-            override fun processListUpdate(pids: List<Int>) {
-                println("pids = $pids")
-                lock.countDown()
-            }
-        })
+        val tracker = TrackJdwpCommand("Y2J7N17729001308",
+            object : TrackJdwpCommand.UpdateListener {
+                override fun processListUpdate(pids: List<Int>) {
+                    println("pids = $pids")
+                    lock.countDown()
+                }
+            })
         adb.sendCommand(tracker)
+
+        lock.await()
+    }
+
+    @Test
+    fun testJdwpConnect() {
+        val lock = CountDownLatch(1)
+
+        val connect = ConnectJdwpCommand("Y2J7N17729001308", 22239,
+            object : ConnectJdwpCommand.ReadyListener {
+                override fun whenChannelReady(channel: SocketChannel) {
+
+                    val handshake =
+                        byteArrayOf(74, 68, 87, 80, 45, 72, 97, 110, 100, 115, 104, 97, 107, 101)
+
+                    val tempBuffer = ByteBuffer.allocate(handshake.size)
+
+                    try {
+                        tempBuffer.put(handshake)
+                        val expectedLen = tempBuffer.position()
+                        tempBuffer.flip()
+                        if (channel.write(tempBuffer) != expectedLen) {
+                            println("partial handshake write")
+                        } else {
+                            println("finish handshake")
+                        }
+                    } catch (e: IOException) {
+                        println("IO error during handshake: " + e.message)
+                    } finally {
+                        channel.close()
+                        lock.countDown()
+                    }
+                }
+            })
+
+        adb.sendCommand(connect)
 
         lock.await()
     }

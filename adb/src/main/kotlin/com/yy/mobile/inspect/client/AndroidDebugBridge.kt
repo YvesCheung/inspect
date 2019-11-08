@@ -48,9 +48,17 @@ class AndroidDebugBridge {
     fun sendCommand(command: AdbCommand) {
         val executor = command.executor() ?: currentThreadExecutor
         executor.execute {
-            SocketChannel.open(socketAddress).use { channel ->
+
+            val runnable = { channel: SocketChannel ->
                 channel.socket().tcpNoDelay = true
                 command.execute(channel, WriterImpl(channel), ReaderImpl(channel))
+            }
+
+            val channel = SocketChannel.open(socketAddress)
+            if (command.needCloseSocket()) {
+                channel.use(runnable)
+            } else {
+                channel.let(runnable)
             }
         }
     }

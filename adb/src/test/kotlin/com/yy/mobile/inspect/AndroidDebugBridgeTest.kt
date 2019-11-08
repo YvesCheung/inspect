@@ -114,6 +114,7 @@ class AndroidDebugBridgeTest {
             object : ConnectJdwpCommand.ReadyListener {
                 override fun whenChannelReady(channel: SocketChannel) {
 
+                    //ASCII for "JDWP-Handshake"
                     val handshake =
                         byteArrayOf(74, 68, 87, 80, 45, 72, 97, 110, 100, 115, 104, 97, 107, 101)
 
@@ -126,7 +127,9 @@ class AndroidDebugBridgeTest {
                         if (channel.write(tempBuffer) != expectedLen) {
                             println("partial handshake write")
                         } else {
-                            println("finish handshake")
+                            channel.read(tempBuffer)
+
+                            println("finish handshake, rsp = "+ String(tempBuffer.array()))
                         }
                     } catch (e: IOException) {
                         println("IO error during handshake: " + e.message)

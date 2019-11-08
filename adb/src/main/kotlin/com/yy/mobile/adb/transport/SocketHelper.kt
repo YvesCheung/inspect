@@ -1,4 +1,4 @@
-package com.yy.mobile.inspect.transport
+package com.yy.mobile.adb.transport
 
 import java.io.IOException
 import java.nio.ByteBuffer

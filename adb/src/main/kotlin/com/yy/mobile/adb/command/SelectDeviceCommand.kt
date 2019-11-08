@@ -1,4 +1,4 @@
-package com.yy.mobile.inspect.command
+package com.yy.mobile.adb.command
 
 /**
  * 用于选定adb通讯的设备，相当于 adb -s <serial-number> <other-command>

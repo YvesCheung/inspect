@@ -1,11 +1,11 @@
-package com.yy.mobile.inspect.client
+package com.yy.mobile.adb.client
 
-import com.yy.mobile.inspect.command.AdbCommand
-import com.yy.mobile.inspect.transport.AdbReader
-import com.yy.mobile.inspect.transport.AdbWriter
-import com.yy.mobile.inspect.command.SimpleCommand
-import com.yy.mobile.inspect.transport.SocketHelper.read
-import com.yy.mobile.inspect.transport.SocketHelper.write
+import com.yy.mobile.adb.command.AdbCommand
+import com.yy.mobile.adb.transport.AdbReader
+import com.yy.mobile.adb.transport.AdbWriter
+import com.yy.mobile.adb.command.SimpleCommand
+import com.yy.mobile.adb.transport.SocketHelper.read
+import com.yy.mobile.adb.transport.SocketHelper.write
 import java.io.IOException
 import java.lang.Exception
 import java.net.InetAddress

@@ -1,8 +1,8 @@
-package com.yy.mobile.inspect
+package com.yy.mobile.adb
 
-import com.yy.mobile.inspect.client.AdbCommandLine
-import com.yy.mobile.inspect.client.AndroidDebugBridge
-import com.yy.mobile.inspect.command.*
+import com.yy.mobile.adb.client.AdbCommandLine
+import com.yy.mobile.adb.client.AndroidDebugBridge
+import com.yy.mobile.adb.command.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.IOException

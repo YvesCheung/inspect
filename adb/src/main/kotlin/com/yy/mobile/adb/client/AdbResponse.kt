@@ -1,4 +1,4 @@
-package com.yy.mobile.inspect.client
+package com.yy.mobile.adb.client
 
 /**
  * @author: YvesCheung

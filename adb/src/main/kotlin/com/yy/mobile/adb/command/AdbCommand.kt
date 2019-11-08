@@ -1,8 +1,7 @@
-package com.yy.mobile.inspect.command
+package com.yy.mobile.adb.command
 
-import com.sun.org.apache.xpath.internal.operations.Bool
-import com.yy.mobile.inspect.transport.AdbReader
-import com.yy.mobile.inspect.transport.AdbWriter
+import com.yy.mobile.adb.transport.AdbReader
+import com.yy.mobile.adb.transport.AdbWriter
 import java.nio.channels.SocketChannel
 import java.util.concurrent.Executor
 

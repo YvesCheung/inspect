@@ -1,6 +1,6 @@
-package com.yy.mobile.inspect.transport
+package com.yy.mobile.adb.transport
 
-import com.yy.mobile.inspect.client.AdbResponse
+import com.yy.mobile.adb.client.AdbResponse
 import java.io.IOException
 import java.util.concurrent.TimeoutException
 

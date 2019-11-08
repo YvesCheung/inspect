@@ -1,8 +1,8 @@
-package com.yy.mobile.inspect.command
+package com.yy.mobile.adb.command
 
-import com.yy.mobile.inspect.client.AdbResponse
-import com.yy.mobile.inspect.transport.AdbReader
-import com.yy.mobile.inspect.transport.AdbWriter
+import com.yy.mobile.adb.client.AdbResponse
+import com.yy.mobile.adb.transport.AdbReader
+import com.yy.mobile.adb.transport.AdbWriter
 import java.lang.RuntimeException
 import java.nio.channels.SocketChannel
 

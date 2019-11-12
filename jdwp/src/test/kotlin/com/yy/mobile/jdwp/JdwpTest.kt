@@ -5,10 +5,14 @@ import com.sun.jdi.connect.spi.ClosedConnectionException
 import com.sun.jdi.connect.spi.Connection
 import com.yy.mobile.adb.client.AndroidDebugBridge
 import com.yy.mobile.adb.command.ConnectJdwpCommand
+import com.yy.mobile.jdwp.command.VMVersion
+import com.yy.mobile.jdwp.transport.JdwpPacketTransmitter
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.channels.SocketChannel
+import java.util.*
 import java.util.concurrent.CountDownLatch
 
 /**
@@ -23,9 +27,11 @@ class JdwpTest {
     fun testJdwpConnect() {
         val lock = CountDownLatch(1)
 
-        val connect = ConnectJdwpCommand("Y2J7N17729001308", 22239,
+        val connect = ConnectJdwpCommand("cc764b31", 3272,
             object : ConnectJdwpCommand.ReadyListener {
                 override fun whenChannelReady(channel: SocketChannel) {
+
+                    channel.configureBlocking(true)
 
                     //ASCII for "JDWP-Handshake"
                     val handshake =
@@ -40,13 +46,13 @@ class JdwpTest {
                         if (channel.write(tempBuffer) != expectedLen) {
                             println("partial handshake write")
                         } else {
-                            channel.read(tempBuffer)
+                            val c = SocketChannelConnection(channel)
 
-                            println("finish handshake, rsp = " + String(tempBuffer.array()))
-
+                            val byteArray = c.readPacket()
+                            println("rsp = ${String(byteArray)}")
 
                             val vm = Bootstrap.virtualMachineManager()
-                                .createVirtualMachine(SocketChannelConnection(channel))
+                                .createVirtualMachine(c)
                             println("vm version = ${vm.version()}")
                         }
                     } catch (e: IOException) {
@@ -65,55 +71,72 @@ class JdwpTest {
 
     private class SocketChannelConnection(private val channel: SocketChannel) : Connection() {
 
-        private val receiveLock = Any()
-
         init {
             channel.configureBlocking(true)
         }
 
+        private val readBuffer = ByteBuffer.allocate(10240)
+
         @Throws(IOException::class)
         override fun readPacket(): ByteArray {
-            if (!this.isOpen) {
-                throw ClosedConnectionException("connection is closed")
-            } else {
-                synchronized(receiveLock) {
-                    val lenBuffer = ByteBuffer.allocate(4)
-
-                    //第一个4字节是长度
+            try {
+                if (!this.isOpen) {
+                    throw ClosedConnectionException("connection is closed")
+                } else {
                     try {
-                        channel.read(lenBuffer)
+                        var bo: ByteArrayOutputStream? = null
+                        while (channel.read(readBuffer) != 0 && readBuffer.position() != 0) {
+                            readBuffer.flip()
+
+                            if (bo != null) {
+                                if (readBuffer.limit() == readBuffer.capacity()) {
+                                    bo.write(readBuffer.array())
+                                } else {
+                                    val byteArray = ByteArray(readBuffer.limit())
+                                    readBuffer.get(byteArray)
+                                    bo.write(byteArray)
+                                    return bo.toByteArray()
+                                }
+                            } else {
+                                val b1 = readBuffer[0].toInt() and 255
+                                val b2 = readBuffer[1].toInt() and 255
+                                val b3 = readBuffer[2].toInt() and 255
+                                val b4 = readBuffer[3].toInt() and 255
+                                if (b1 == 74 && b2 == 68 && b3 == 87 && b4 == 80) { //handshake
+                                    return ByteArray(14).also { readBuffer.get(it) }
+                                }
+                                val length = (b1 shl 24) or (b2 shl 16) or (b3 shl 8) or b4
+                                when {
+                                    length <= 0 -> {
+                                        throw IOException("protocol error - invalid length")
+                                    }
+                                    length > readBuffer.limit() -> {
+                                        println("message length is $length")
+                                        bo = ByteArrayOutputStream(length)
+                                        bo.write(readBuffer.array())
+                                    }
+                                    else -> {
+                                        return ByteArray(length).also { readBuffer.get(it) }
+                                    }
+                                }
+                            }
+                            readBuffer.clear()
+                        }
+                        return bo?.toByteArray() ?: ByteArray(0)
                     } catch (e: IOException) {
                         if (!isOpen) {
                             throw ClosedConnectionException("connection is closed")
                         }
                         throw e
                     }
-
-                    lenBuffer.flip()
-                    val b1 = lenBuffer[0].toInt()
-                    val b2 = lenBuffer[1].toInt()
-                    val b3 = lenBuffer[2].toInt()
-                    val b4 = lenBuffer[3].toInt()
-                    if (b1 == 74 && b2 == 68 && b3 == 87 && b4 == 80) { //handshake
-                        val other = ByteBuffer.allocate(10)
-                        channel.read(other)
-                        return ByteBuffer.allocate(14).put(lenBuffer).put(other).array()
-                    }
-                    val length = (b1 shl 24) or (b2 shl 16) or (b3 shl 8) or b4
-                    if (length <= 0) {
-                        throw IOException("protocol error - invalid length")
-                    } else {
-                        val contentBuffer = ByteBuffer.allocate(length - 4)
-                        channel.read(contentBuffer)
-
-                        val packetBuffer = ByteBuffer.allocate(length)
-                        packetBuffer.put(lenBuffer)
-                        packetBuffer.put(contentBuffer)
-
-                        return packetBuffer.array()
-                    }
                 }
+            } catch (e: IOException) {
+                println(e)
+            } finally {
+                readBuffer.clear()
             }
+
+            return ByteArray(0)
         }
 
         @Throws(IOException::class)

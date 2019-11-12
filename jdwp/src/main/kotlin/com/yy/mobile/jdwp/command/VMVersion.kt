@@ -11,10 +11,9 @@ import com.yy.mobile.jdwp.transport.JdwpWriter
 class VMVersion : JdwpPacket(1, 1) {
 
     override fun to(writer: JdwpWriter) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //Nothing to write
     }
 
     override fun from(reader: JdwpReader) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

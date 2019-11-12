@@ -6,5 +6,5 @@ package com.yy.mobile.jdwp.transport
  */
 interface JdwpReader {
 
-
+    fun readInt(): Int
 }

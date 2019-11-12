@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.nio.ByteBuffer
-import java.nio.channels.AsynchronousCloseException
 import java.nio.channels.ClosedChannelException
 import java.nio.channels.SocketChannel
 import java.util.concurrent.ExecutorService
@@ -38,6 +37,9 @@ open class JavaDebugTarget(private val channel: SocketChannel) {
 
     //guard by "this"
     protected var debugging = false
+
+    //guard by "sessionHolder"
+    protected val sessionHolder: MutableMap<Int, JdwpSession> = HashMap()
 
     @Synchronized
     open fun startDebug() {
@@ -119,8 +121,6 @@ open class JavaDebugTarget(private val channel: SocketChannel) {
             replySession.reply(packet)
         }
     }
-
-    protected val sessionHolder: MutableMap<Int, JdwpSession> = HashMap()
 
     open fun newSession(command: JdwpPacket, reply: JdwpPacket.() -> Unit) {
         val id = command.id

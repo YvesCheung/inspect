@@ -105,11 +105,11 @@ class AndroidDebugBridgeTest {
     fun testJdwpTracker() {
         val lock = CountDownLatch(1)
 
-        val tracker = TrackJdwpCommand("Y2J7N17729001308",
+        val tracker = TrackJdwpCommand("cc764b31",
             object : TrackJdwpCommand.UpdateListener {
                 override fun processListUpdate(pids: List<Int>) {
                     println("pids = $pids")
-                    lock.countDown()
+                    //lock.countDown()
                 }
             })
         adb.sendCommand(tracker)

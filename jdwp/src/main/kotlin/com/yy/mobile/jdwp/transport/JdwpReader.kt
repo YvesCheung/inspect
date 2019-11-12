@@ -7,4 +7,8 @@ package com.yy.mobile.jdwp.transport
 interface JdwpReader {
 
     fun readInt(): Int
+
+    fun readByte(): Byte
+
+    fun readShort(): Short
 }

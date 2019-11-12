@@ -1,7 +1,5 @@
 package com.yy.mobile.jdwp.transport
 
-import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -88,5 +86,5 @@ abstract class JdwpPacket(
 
     abstract fun to(writer: JdwpWriter)
 
-    abstract fun from(reader: JdwpReader)
+    abstract fun from(errorCode: Short, reader: JdwpReader)
 }

@@ -43,7 +43,7 @@ open class TrackJdwpCommand(
     private val selectTarget = SelectDeviceCommand(deviceSerialNumber)
 
     override fun execute(channel: SocketChannel, writer: AdbWriter, reader: AdbReader) {
-
+        channel.configureBlocking(true)
         connect = channel
 
         val lenBuffer = ByteArray(4)

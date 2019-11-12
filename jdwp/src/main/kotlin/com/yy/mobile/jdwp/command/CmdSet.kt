@@ -6,7 +6,7 @@ package com.yy.mobile.jdwp.command
  */
 sealed class CmdSet(toByte: Byte)
 
-sealed class CmdId(toByte: Byte)
+interface CmdId//(toByte: Byte)
 
 //ReferenceType(2),
 //ClassType(3),
@@ -26,7 +26,12 @@ sealed class CmdId(toByte: Byte)
 //Event(64)
 
 
-class VirtualMachine : CmdSet(1)
+class VirtualMachine : CmdSet(1) {
 
-class Version : CmdId(1)
+    enum class VirtualMachine : CmdId {
+        Version
+    }
+    //class Version : CmdId(1)
+}
+
 

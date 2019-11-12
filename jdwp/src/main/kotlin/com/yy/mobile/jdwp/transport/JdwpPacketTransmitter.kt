@@ -7,7 +7,7 @@ import java.io.IOException
  * @author YvesCheung
  * 2019/11/11
  */
-class JdwpPacketTransmitter {
+object JdwpPacketTransmitter {
 
     fun toByteArray(packet: JdwpPacket): ByteArray {
         val packetWriter = WriterImpl(ByteArrayOutputStream())
@@ -37,18 +37,31 @@ class JdwpPacketTransmitter {
         return packetWriter.getData()
     }
 
-    fun fromByteArray(byteArray: ByteArray) {
+    fun fromByteArray(byteArray: ByteArray, findPacket: (id: Int) -> JdwpPacket?): JdwpPacket? {
         if (byteArray.size < 11) {
             throw IOException("packet is insufficient size")
         } else {
             val packetReader = ReaderImpl(byteArray)
             val length = packetReader.readInt()
             if (length != byteArray.size) {
-                throw IOException("length size mis-match")
-            } else {
+                throw IOException(
+                    "length size mis-match, " +
+                            "expect = $length but actual = ${byteArray.size}"
+                )
+            }
 
+            val id = packetReader.readInt()
+            val packet = findPacket(id)
+            if (packet != null) {
+                val flag = packetReader.readByte()
+                if (flag == JdwpPacket.REPLAY_FLAG) {
+                    val errorCode = packetReader.readShort()
+                    packet.from(errorCode, packetReader)
+                    return packet
+                }
             }
         }
+        return null
     }
 
     private class WriterImpl(val dataStream: ByteArrayOutputStream) : JdwpWriter {
@@ -60,11 +73,14 @@ class JdwpPacketTransmitter {
         }
 
         override fun writeInt(int: Int) {
-            dataStream.write(int)
+            dataStream.write(int.ushr(24) and 255)
+            dataStream.write(int.ushr(16) and 255)
+            dataStream.write(int.ushr(8) and 255)
+            dataStream.write(int.ushr(0) and 255)
         }
 
         override fun writeByte(byte: Byte) {
-            writeInt(byte.toInt())
+            dataStream.write(byte.toInt() and 255)
         }
 
         override fun writeByteArray(byteArray: ByteArray) {
@@ -79,11 +95,21 @@ class JdwpPacketTransmitter {
         private var inCursor = 0
 
         override fun readInt(): Int {
-            val var1 = data[inCursor++].toInt()
-            val var2 = data[inCursor++].toInt()
-            val var3 = data[inCursor++].toInt()
-            val var4 = data[inCursor++].toInt()
+            val var1 = data[inCursor++].toInt() and 255
+            val var2 = data[inCursor++].toInt() and 255
+            val var3 = data[inCursor++].toInt() and 255
+            val var4 = data[inCursor++].toInt() and 255
             return (var1 shl 24) + (var2 shl 16) + (var3 shl 8) + var4
+        }
+
+        override fun readByte(): Byte {
+            return data[inCursor++]
+        }
+
+        override fun readShort(): Short {
+            val var1 = data[inCursor++].toInt() and 255
+            val var2 = data[inCursor++].toInt() and 255
+            return ((var1 shl 8) + var2).toShort()
         }
     }
 }

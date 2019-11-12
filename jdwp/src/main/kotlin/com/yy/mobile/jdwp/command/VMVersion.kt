@@ -14,6 +14,7 @@ class VMVersion : JdwpPacket(1, 1) {
         //Nothing to write
     }
 
-    override fun from(reader: JdwpReader) {
+    override fun from(errorCode: Short, reader: JdwpReader) {
+        println("errorCode = $errorCode")
     }
 }

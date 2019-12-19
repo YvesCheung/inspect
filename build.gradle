@@ -13,6 +13,13 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url 'http://172.26.68.24:8081/repository/maven-public'
+            credentials {
+                username 'admin'
+                password 'admin'
+            }
+        }
         maven { url 'http://repo.yypm.com:8181/nexus/content/groups/public' }
         google()
         jcenter()

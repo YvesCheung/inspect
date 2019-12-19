@@ -32,3 +32,19 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
+
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.groupId = "com.yy.mobile.adb"
+        pom.artifactId = "AdbUtil"
+        pom.version = "1.0.0-SNAPSHOT"
+
+        repository(url: uri('http://172.26.68.24:8081/repository/maven-releases/')) {
+            authentication(userName: 'admin', password: 'admin')
+        }
+
+        snapshotRepository(url: uri('http://172.26.68.24:8081/repository/maven-snapshots/')) {
+            authentication(userName: 'admin', password: 'admin')
+        }
+    }
+}
